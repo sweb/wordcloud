@@ -4,6 +4,7 @@
 package words
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"regexp"
@@ -68,7 +69,6 @@ func splitByWhitespaces(words string) []string {
 				wordSlice = append(wordSlice, currWord)
 				currWord = ""
 			}
-
 		} else {
 			currWord = currWord + string(char)
 		}
@@ -79,4 +79,24 @@ func splitByWhitespaces(words string) []string {
 		wordSlice = append(wordSlice, currWord)
 	}
 	return wordSlice
+}
+
+// This function creates n-grams based on a given set of words and the size of
+// n. n needs to be greater than 0.
+func CreateNGrams(words []string, n int) ([]NGram, error) {
+	if n < 0 {
+		return nil, errors.New("n of n-gram needs to be > 0")
+	}
+	// n reduces total number of n-grams but even if n equals the number of
+	// words, one n-gram is created.
+	numberOfNGrams := len(words) - (n - 1)
+	nGramList := make([]NGram, numberOfNGrams)
+	for i := 0; i < numberOfNGrams; i++ {
+		nGram := make(NGram, n)
+		for j := 0; j < n; j++ {
+			nGram[j] = words[i+j]
+		}
+		nGramList[i] = nGram
+	}
+	return nGramList, nil
 }

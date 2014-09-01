@@ -6,7 +6,7 @@ import (
 )
 
 // Defines lower bound of word count to be displayed
-var wordThreshold = 2
+var wordThreshold = 1
 
 func main() {
 	fmt.Println("###############################################################")
@@ -15,6 +15,7 @@ func main() {
 		fmt.Println(err.Error())
 		return
 	}
+	fmt.Println(importedWords)
 	topWords, err := words.PutFileContentInSlice("data/top10000de.txt")
 	if err != nil {
 		fmt.Println("Unable to load frequency list: " + err.Error())
@@ -22,6 +23,21 @@ func main() {
 	fmt.Println("###############################################################")
 	wordMap := words.CountOfWords(importedWords, topWords)
 
+	twoGrams, err := words.CreateNGrams(importedWords, 2)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	ngramMap := make(map[string]int)
+
+	for _, gram := range twoGrams {
+		if gram.IsDistinctive(wordMap) {
+			ngramMap[gram.Key()]++
+		}
+	}
+
+	fmt.Println("2-Grams:")
+	fmt.Println(ngramMap)
 	sortedWordList := words.SortMapByValue(wordMap)
 
 	fmt.Printf("Number of words: %d\n", +len(importedWords))
