@@ -4,8 +4,6 @@
 package words
 
 import (
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"regexp"
 	"strings"
@@ -21,7 +19,6 @@ func PutFileContentInSlice(filename string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("Success: File %v loaded!\n", filename)
 	// Cast to string and split by defined whitespaces
 	words := splitByWhitespaces(string(body))
 
@@ -38,12 +35,7 @@ func CountOfWords(words []string, commonWords []string) map[string]int {
 		lowerCaseWord := strings.ToLower(word)
 		// If the word is not listed yet, initialize it with a counter of 1,
 		// else increase the counter by 1.
-		currWordCount := wordMap[lowerCaseWord]
-		if currWordCount == 0 {
-			wordMap[lowerCaseWord] = 1
-		} else {
-			wordMap[lowerCaseWord] = currWordCount + 1
-		}
+		wordMap[lowerCaseWord]++
 	}
 	// Remove common words
 	for _, word := range commonWords {
@@ -79,24 +71,4 @@ func splitByWhitespaces(words string) []string {
 		wordSlice = append(wordSlice, currWord)
 	}
 	return wordSlice
-}
-
-// This function creates n-grams based on a given set of words and the size of
-// n. n needs to be greater than 0.
-func CreateNGrams(words []string, n int) ([]NGram, error) {
-	if n < 0 {
-		return nil, errors.New("n of n-gram needs to be > 0")
-	}
-	// n reduces total number of n-grams but even if n equals the number of
-	// words, one n-gram is created.
-	numberOfNGrams := len(words) - (n - 1)
-	nGramList := make([]NGram, numberOfNGrams)
-	for i := 0; i < numberOfNGrams; i++ {
-		nGram := make(NGram, n)
-		for j := 0; j < n; j++ {
-			nGram[j] = words[i+j]
-		}
-		nGramList[i] = nGram
-	}
-	return nGramList, nil
 }
